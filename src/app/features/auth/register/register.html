@@ -1,1 +1,85 @@
-<p>register works!</p>
+<div class="min-h-[calc(100vh-80px)] bg-[#f8f9fa] flex items-center justify-center p-4">
+  <div class="bg-white p-10 sm:p-12 rounded-[24px] shadow-sm w-full max-w-[440px]">
+    <!-- Logo -->
+    <div class="mb-8 font-bold text-[17px] tracking-tight text-black">
+      KICK<span class="text-gray-400 font-normal">store</span>
+    </div>
+
+    <!-- Headers -->
+    <div class="mb-8">
+      <h2 class="text-[22px] font-extrabold text-gray-900 mb-2 tracking-tight">Crea tu cuenta</h2>
+      <p class="text-[14px] text-gray-400 font-medium">Empieza a comprar hoy</p>
+    </div>
+
+    <!-- Form -->
+    <form class="space-y-5">
+      
+      <!-- Name Field -->
+      <div>
+        <label for="name" class="block text-[12px] font-bold text-gray-600 mb-2 ml-1">Nombre completo</label>
+        <input 
+          type="text" 
+          id="name" 
+          name="name"
+          placeholder="Javier Salvador"
+          class="w-full px-5 py-3.5 bg-white border border-gray-200 rounded-[12px] text-[14px] text-gray-900 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all font-medium"
+        />
+      </div>
+
+      <!-- Email Field -->
+      <div>
+        <label for="email" class="block text-[12px] font-bold text-gray-600 mb-2 ml-1">Email</label>
+        <input 
+          type="email" 
+          id="email" 
+          name="email"
+          placeholder="tu@email.com"
+          class="w-full px-5 py-3.5 bg-white border border-gray-200 rounded-[12px] text-[14px] text-gray-900 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all font-medium"
+        />
+      </div>
+
+      <!-- Password Field -->
+      <div>
+        <label for="password" class="block text-[12px] font-bold text-gray-600 mb-2 ml-1">Contraseña</label>
+        <input 
+          type="password" 
+          id="password" 
+          name="password"
+          placeholder="Mínimo 6 caracteres"
+          class="w-full px-5 py-3.5 bg-white border border-gray-200 rounded-[12px] text-[14px] text-gray-900 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all font-medium"
+        />
+      </div>
+
+      <!-- Confirm Password Field -->
+      <div>
+        <label for="confirm-password" class="block text-[12px] font-bold text-gray-600 mb-2 ml-1">Confirmar contraseña</label>
+        <input 
+          type="password" 
+          id="confirm-password" 
+          name="confirm-password"
+          placeholder="Repite la contraseña"
+          class="w-full px-5 py-3.5 bg-white border border-gray-200 rounded-[12px] text-[14px] text-gray-900 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all font-medium"
+        />
+      </div>
+
+      <!-- Submit Button -->
+      <div class="pt-2">
+        <button 
+          type="button" 
+          class="w-full bg-[#0f0f0f] text-white py-4 rounded-[14px] font-bold text-[15px] hover:bg-black hover:shadow-lg transition-all"
+        >
+          Crear cuenta
+        </button>
+      </div>
+
+    </form>
+
+    <!-- Footer link -->
+    <div class="mt-8 text-center">
+      <p class="text-[13px] text-gray-400 font-medium">
+        ¿Ya tienes cuenta? 
+        <a routerLink="/login" class="text-black font-extrabold hover:underline transition-all">Inicia sesión</a>
+      </p>
+    </div>
+  </div>
+</div>

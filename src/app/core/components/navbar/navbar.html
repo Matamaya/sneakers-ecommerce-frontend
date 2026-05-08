@@ -1,1 +1,66 @@
-<p>navbar works!</p>
+<nav class="flex items-center justify-between px-6 py-4 bg-[#0f0f0f] border-b border-[#222]">
+  <!-- Logo común -->
+  <a routerLink="/" class="text-2xl font-bold tracking-tighter text-white">
+    KICK<span class="text-gray-500 font-medium">store</span>
+  </a>
+
+  <!-- Enlaces de navegación centrales -->
+  <div class="hidden md:flex items-center space-x-8 text-sm font-medium">
+    <a routerLink="/" routerLinkActive="text-white" [routerLinkActiveOptions]="{exact: true}" class="text-gray-400 hover:text-white transition-colors">Inicio</a>
+    <a routerLink="/catalog" routerLinkActive="text-white" class="text-gray-400 hover:text-white transition-colors">Catálogo</a>
+
+    <!-- Vista Usuario Normal: Mis pedidos -->
+    @if (authService.isLoggedIn() && !authService.isAdmin()) {
+      <a routerLink="/my-orders" routerLinkActive="text-white" class="text-gray-400 hover:text-white transition-colors">Mis pedidos</a>
+    }
+
+    <!-- Vista Admin: Gestión -->
+    @if (authService.isAdmin()) {
+      <a routerLink="/admin/products" routerLinkActive="text-white" class="text-gray-400 hover:text-white transition-colors">Admin · Productos</a>
+      <a routerLink="/admin/orders" routerLinkActive="text-white" class="text-gray-400 hover:text-white transition-colors">Admin · Pedidos</a>
+    }
+  </div>
+
+  <!-- Controles derecha -->
+  <div class="flex items-center space-x-6">
+    
+    <!-- Carrito (Oculto para Admin)[cite: 1] -->
+    @if (!authService.isAdmin()) {
+      <a routerLink="/cart" class="relative text-gray-400 hover:text-white transition-colors cursor-pointer group">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+        </svg>
+        @if (cartItemCount() > 0) {
+          <span class="absolute -top-1.5 -right-2 bg-white text-black text-[10px] font-bold h-4 min-w-[16px] px-1 flex items-center justify-center rounded-full group-hover:scale-110 transition-transform">
+            {{ cartItemCount() }}
+          </span>
+        }
+      </a>
+    }
+
+    <!-- Botón Login (Visitante)[cite: 1] -->
+    @if (!authService.isLoggedIn()) {
+      <a routerLink="/login" class="px-5 py-2 text-sm font-medium border border-[#333] rounded-lg hover:bg-white hover:text-black transition-all">
+        Iniciar sesión
+      </a>
+    }
+
+    <!-- Perfil de Usuario/Admin logueado[cite: 1] -->
+    @if (authService.isLoggedIn()) {
+      <div class="flex items-center space-x-4 border-l border-[#333] pl-6">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-[#1a1a1a] border border-[#333] text-gray-300 flex items-center justify-center text-sm font-bold">
+            {{ authService.currentUser()?.email?.charAt(0) | uppercase }}
+          </div>
+          <span class="hidden sm:block text-sm text-gray-300 font-medium">
+             <!-- Si quisieras mostrar el nombre y no el email, lo cambiarías aquí -->
+            {{ (authService.currentUser()?.email || '').split('@')[0] }} 
+          </span>
+        </div>
+        <button (click)="logout()" class="text-sm text-gray-500 hover:text-white transition-colors cursor-pointer">
+          Salir
+        </button>
+      </div>
+    }
+  </div>
+</nav>
