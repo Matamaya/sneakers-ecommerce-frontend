@@ -10,6 +10,7 @@ export interface Category {
 
 export interface Product {
   id: string;
+  slug?: string;
   name: string;
   brand: string;
   price: number;
@@ -41,6 +42,10 @@ export class ProductsService {
 
   getProducts(): Observable<{ data: Product[], total: number }> {
     return this.http.get<{ data: Product[], total: number }>(`${this.apiUrl}/products?limit=100`);
+  }
+
+  getProduct(slug: string): Observable<Product> {
+    return this.http.get<Product>(`${this.apiUrl}/products/${slug}`);
   }
 
   getCategories(): Observable<Category[]> {

@@ -1,1 +1,140 @@
-<p>product-detail works!</p>
+<div class="max-w-[1200px] mx-auto px-6 py-12">
+  
+  @if (isLoading()) {
+    <div class="flex justify-center items-center py-32">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-black"></div>
+    </div>
+  } @else if (!product()) {
+    <div class="text-center py-32">
+      <h2 class="text-2xl font-bold mb-4">Producto no encontrado</h2>
+      <a routerLink="/catalog" class="text-blue-600 hover:underline">Volver al catálogo</a>
+    </div>
+  } @else {
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
+      
+      <!-- Lado Izquierdo: Imagen -->
+      <div class="bg-[#f2f2f2] rounded-[32px] p-10 flex items-center justify-center min-h-[500px]">
+        @if (product()!.image_url) {
+          <img [src]="product()!.image_url" [alt]="product()!.name" class="w-full max-w-[500px] object-contain drop-shadow-2xl mix-blend-multiply">
+        } @else {
+          <span class="text-gray-400 font-bold text-xl">Sin imagen</span>
+        }
+      </div>
+
+      <!-- Lado Derecho: Detalles -->
+      <div class="flex flex-col py-4">
+        
+        <!-- Breadcrumbs -->
+        <div class="flex items-center text-[12px] font-medium text-gray-400 mb-6">
+          <a routerLink="/" class="hover:text-black transition-colors">Inicio</a>
+          <span class="mx-2">›</span>
+          <a routerLink="/catalog" class="hover:text-black transition-colors">Catálogo</a>
+          <span class="mx-2">›</span>
+          <span class="text-gray-900">{{ product()!.name }}</span>
+        </div>
+
+        <!-- Marca -->
+        @if (product()!.brand) {
+          <p class="text-[11px] font-bold tracking-widest text-gray-400 uppercase mb-2">{{ product()!.brand }}</p>
+        }
+
+        <!-- Nombre -->
+        <h1 class="text-[36px] font-extrabold text-gray-900 tracking-tight leading-tight mb-4">
+          {{ product()!.name }}
+        </h1>
+
+        <!-- Categoría -->
+        <div class="mb-6">
+          <span class="inline-block px-4 py-1.5 bg-gray-100 text-gray-500 rounded-full text-[12px] font-bold">
+            {{ product()!.categories?.name || 'Genérico' }}
+          </span>
+        </div>
+
+        <!-- Precio -->
+        <p class="text-[32px] font-extrabold text-gray-900 tracking-tight mb-8">
+          {{ product()!.price | number:'1.2-2' }} €
+        </p>
+
+        <!-- Descripción -->
+        @if (product()!.description) {
+          <p class="text-[14px] text-gray-500 leading-relaxed font-medium mb-10 pb-10 border-b border-gray-100">
+            {{ product()!.description }}
+          </p>
+        }
+
+        <!-- Tallas -->
+        <div class="mb-10">
+          <div class="flex items-center gap-2 mb-4">
+            <h3 class="text-[12px] font-extrabold text-gray-900 tracking-widest uppercase">TALLA</h3>
+            @if (selectedSize()) {
+              <span class="text-gray-400 text-[12px] font-medium">— {{ selectedSize() }}</span>
+            }
+          </div>
+          <div class="flex flex-wrap gap-3">
+            @for (sizeObj of product()!.sizes; track sizeObj.size) {
+              <button 
+                (click)="selectSize(sizeObj.size)"
+                [disabled]="sizeObj.stock === 0"
+                class="w-[48px] h-[48px] rounded-[12px] border flex items-center justify-center text-[14px] font-bold transition-all"
+                [ngClass]="{
+                  'bg-black text-white border-black shadow-lg shadow-black/20': selectedSize() == sizeObj.size,
+                  'bg-white text-gray-900 border-gray-200 hover:border-black': selectedSize() != sizeObj.size && sizeObj.stock > 0,
+                  'bg-gray-50 text-gray-300 border-gray-100 cursor-not-allowed': sizeObj.stock === 0
+                }"
+              >
+                {{ sizeObj.size }}
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- Cantidad -->
+        <div class="mb-10">
+          <h3 class="text-[12px] font-extrabold text-gray-900 tracking-widest uppercase mb-4">CANTIDAD</h3>
+          <div class="flex items-center gap-6">
+            <div class="flex items-center border border-gray-200 rounded-[12px] overflow-hidden bg-white">
+              <button 
+                (click)="decrementQuantity()"
+                class="w-[42px] h-[42px] flex items-center justify-center text-gray-500 hover:text-black hover:bg-gray-50 transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15" /></svg>
+              </button>
+              <div class="w-[42px] h-[42px] flex items-center justify-center text-[14px] font-bold text-gray-900 border-x border-gray-100">
+                {{ quantity() }}
+              </div>
+              <button 
+                (click)="incrementQuantity()"
+                class="w-[42px] h-[42px] flex items-center justify-center text-gray-500 hover:text-black hover:bg-gray-50 transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+              </button>
+            </div>
+            
+            <span class="text-[13px] font-medium" [ngClass]="availableStock() > 10 ? 'text-gray-400' : 'text-orange-500 font-bold'">
+              {{ availableStock() }} disponibles
+            </span>
+          </div>
+        </div>
+
+        <!-- Botón Añadir -->
+        <button 
+          (click)="addToCart()"
+          [disabled]="!selectedSize() || availableStock() === 0"
+          class="w-full py-4 rounded-[14px] text-[15px] font-bold text-white transition-all mb-6 shadow-xl shadow-black/10"
+          [ngClass]="(!selectedSize() || availableStock() === 0) ? 'bg-gray-300 cursor-not-allowed' : 'bg-[#0f0f0f] hover:bg-black hover:-translate-y-0.5'"
+        >
+          Añadir al carrito
+        </button>
+
+        <!-- Volver -->
+        <div class="text-center">
+          <a routerLink="/catalog" class="inline-flex items-center text-[13px] font-medium text-gray-400 hover:text-black transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 mr-2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" /></svg>
+            Volver al catálogo
+          </a>
+        </div>
+
+      </div>
+    </div>
+  }
+</div>
