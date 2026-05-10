@@ -1,1 +1,205 @@
-<p>admin-products works!</p>
+<div class="max-w-[1100px] mx-auto px-6 py-12">
+  
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="text-[28px] font-extrabold text-gray-900 tracking-tight leading-tight">Gestión de productos</h1>
+      <p class="text-[14px] text-gray-400 font-medium mt-1">{{ products().length }} productos en el catálogo</p>
+    </div>
+    <button (click)="openSidebar()" class="bg-[#0f0f0f] text-white px-5 py-2.5 rounded-[10px] text-[13px] font-bold hover:bg-black transition-all shadow-sm">
+      + Nuevo producto
+    </button>
+  </div>
+
+  <!-- Table Container -->
+  <div class="bg-white rounded-[16px] border border-gray-100 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse min-w-[800px]">
+        <!-- Table Header -->
+        <thead>
+          <tr class="border-b border-gray-100 text-[11px] font-bold text-gray-400 tracking-[0.08em] bg-[#fafafa]">
+            <th class="py-4 px-6 font-bold w-[35%]">PRODUCTO</th>
+            <th class="py-4 px-6 font-bold">CATEGORÍA</th>
+            <th class="py-4 px-6 font-bold">PRECIO</th>
+            <th class="py-4 px-6 font-bold">STOCK</th>
+            <th class="py-4 px-6 font-bold">ESTADO</th>
+            <th class="py-4 px-6 font-bold text-right">ACCIONES</th>
+          </tr>
+        </thead>
+        
+        <!-- Table Body -->
+        <tbody class="divide-y divide-gray-100">
+          @for (product of products(); track product.id) {
+            <tr class="hover:bg-[#fcfcfc] transition-colors group bg-white">
+              <!-- Product -->
+              <td class="py-4 px-6">
+                <div class="flex items-center gap-4">
+                  <div class="w-[48px] h-[48px] bg-gray-50 rounded-[12px] flex items-center justify-center overflow-hidden shrink-0 border border-gray-100">
+                    @if (product.image_url) {
+                      <img [src]="product.image_url" [alt]="product.name" class="w-full h-full object-cover">
+                    } @else {
+                      <span class="text-gray-300 text-[10px] font-bold">IMG</span>
+                    }
+                  </div>
+                  <div>
+                    <h3 class="font-bold text-[14px] text-gray-900 tracking-tight">{{ product.name }}</h3>
+                    <p class="text-[12px] text-gray-400 font-medium">{{ product.brand }}</p>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Category -->
+              <td class="py-4 px-6">
+                <span class="inline-flex px-3 py-1 bg-gray-100/80 text-gray-500 rounded-full text-[11px] font-bold tracking-wide">
+                  {{ product.categories?.name || 'Genérico' }}
+                </span>
+              </td>
+
+              <!-- Price -->
+              <td class="py-4 px-6">
+                <span class="font-extrabold text-gray-900 text-[13px] tracking-tight">{{ product.price }} €</span>
+              </td>
+
+              <!-- Stock -->
+              <td class="py-4 px-6">
+                <span class="font-extrabold text-gray-900 text-[13px]">{{ product.stock }}</span>
+              </td>
+
+              <!-- Status -->
+              <td class="py-4 px-6">
+                @if (product.is_active) {
+                  <span class="inline-flex px-3 py-1 bg-green-50 text-green-600 rounded-full text-[11px] font-bold tracking-wide">
+                    Activo
+                  </span>
+                } @else {
+                  <span class="inline-flex px-3 py-1 bg-red-50 text-red-600 rounded-full text-[11px] font-bold tracking-wide">
+                    Inactivo
+                  </span>
+                }
+              </td>
+
+              <!-- Actions -->
+              <td class="py-4 px-6 text-right">
+                <div class="flex items-center justify-end gap-2">
+                  <button (click)="editProduct(product)" class="px-4 py-1.5 border border-gray-200 text-gray-500 bg-white rounded-[8px] text-[12px] font-bold hover:bg-gray-50 hover:text-gray-700 transition-colors">
+                    Editar
+                  </button>
+                  <button (click)="deleteProduct(product.id)" class="px-4 py-1.5 border border-red-200 text-red-500 bg-white rounded-[8px] text-[12px] font-bold hover:bg-red-50 transition-colors">
+                    Eliminar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Overlay (Fondo oscuro) -->
+@if (isSidebarOpen()) {
+  <div 
+    class="fixed inset-0 bg-black/30 backdrop-blur-[2px] z-40 transition-opacity"
+    (click)="closeSidebar()"
+  ></div>
+}
+
+<!-- Sidebar Derecho -->
+<div 
+  class="fixed top-0 right-0 h-full w-full max-w-[450px] bg-white z-50 shadow-2xl transition-transform duration-300 transform flex flex-col"
+  [class.translate-x-0]="isSidebarOpen()"
+  [class.translate-x-full]="!isSidebarOpen()"
+>
+  <!-- Sidebar Header -->
+  <div class="flex items-center justify-between px-8 py-6 border-b border-gray-100">
+    <h2 class="text-xl font-extrabold text-gray-900 tracking-tight">{{ editingProductId() ? 'Editar producto' : 'Nuevo producto' }}</h2>
+    <button (click)="closeSidebar()" class="text-gray-400 hover:text-gray-900 transition-colors">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Sidebar Body (Formulario) -->
+  <div class="flex-1 overflow-y-auto px-8 py-6 space-y-6">
+    
+    <!-- Imagen -->
+    <div>
+      <label class="block text-[13px] font-bold text-gray-600 mb-2">Imagen</label>
+      <div class="relative border-2 border-dashed border-gray-200 rounded-[16px] p-10 flex flex-col items-center justify-center text-center hover:border-gray-300 transition-colors cursor-pointer bg-gray-50/50">
+        <input type="file" accept="image/*" (change)="onFileSelected($event)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-gray-300 mb-2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+        </svg>
+        <span class="text-[13px] font-medium text-gray-400">
+          {{ selectedFile() ? selectedFile()?.name : 'Haz clic o arrastra una imagen' }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Nombre -->
+    <div>
+      <label class="block text-[13px] font-bold text-gray-600 mb-2">Nombre *</label>
+      <input type="text" [ngModel]="productForm().name" (ngModelChange)="updateField('name', $event)" placeholder="Ej: Nike Air Max 90" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-[10px] text-[14px] focus:outline-none focus:ring-2 focus:ring-black transition-all">
+    </div>
+
+    <!-- Marca -->
+    <div>
+      <label class="block text-[13px] font-bold text-gray-600 mb-2">Marca</label>
+      <input type="text" [ngModel]="productForm().brand" (ngModelChange)="updateField('brand', $event)" placeholder="Ej: Nike" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-[10px] text-[14px] focus:outline-none focus:ring-2 focus:ring-black transition-all">
+    </div>
+
+    <!-- Categoría -->
+    <div>
+      <label class="block text-[13px] font-bold text-gray-600 mb-2">Categoría</label>
+      <select [ngModel]="productForm().category_id" (ngModelChange)="updateField('category_id', $event)" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-[10px] text-[14px] text-gray-600 focus:outline-none focus:ring-2 focus:ring-black transition-all appearance-none cursor-pointer">
+        <option value="">Selecciona una categoría</option>
+        @for (category of categories(); track category.id) {
+          <option [value]="category.id">{{ category.name }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Precio & Stock -->
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="block text-[13px] font-bold text-gray-600 mb-2">Precio (€) *</label>
+        <input type="number" [ngModel]="productForm().price" (ngModelChange)="updateField('price', $event)" placeholder="0" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-[10px] text-[14px] focus:outline-none focus:ring-2 focus:ring-black transition-all">
+      </div>
+      <div>
+        <label class="block text-[13px] font-bold text-gray-600 mb-2">Stock total</label>
+        <input type="number" [ngModel]="productForm().stock" (ngModelChange)="updateField('stock', $event)" placeholder="0" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-[10px] text-[14px] focus:outline-none focus:ring-2 focus:ring-black transition-all">
+      </div>
+    </div>
+
+    <!-- Tallas -->
+    <div>
+      <label class="block text-[13px] font-bold text-gray-600 mb-2">Tallas disponibles (separadas por coma)</label>
+      <input type="text" [ngModel]="productForm().sizes" (ngModelChange)="updateField('sizes', $event)" placeholder="Ej: 39, 40, 41.5, 42" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-[10px] text-[14px] focus:outline-none focus:ring-2 focus:ring-black transition-all">
+    </div>
+
+    <!-- Stock por talla -->
+    <div>
+      <label class="block text-[13px] font-bold text-gray-600 mb-2">Stock por talla (separado por coma)</label>
+      <input type="text" [ngModel]="productForm().sizesStock" (ngModelChange)="updateField('sizesStock', $event)" placeholder="Ej: 10, 5, 20, 0" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-[10px] text-[14px] focus:outline-none focus:ring-2 focus:ring-black transition-all">
+    </div>
+
+    <!-- Descripción -->
+    <div>
+      <label class="block text-[13px] font-bold text-gray-600 mb-2">Descripción</label>
+      <textarea [ngModel]="productForm().description" (ngModelChange)="updateField('description', $event)" rows="4" placeholder="Añade una descripción para este producto..." class="w-full px-4 py-3 bg-white border border-gray-200 rounded-[10px] text-[14px] focus:outline-none focus:ring-2 focus:ring-black transition-all resize-none"></textarea>
+    </div>
+
+  </div>
+
+  <!-- Sidebar Footer -->
+  <div class="px-8 py-6 border-t border-gray-100 flex items-center justify-between gap-4 bg-white">
+    <button (click)="closeSidebar()" class="w-1/3 px-5 py-3.5 border border-gray-200 text-gray-600 rounded-[12px] text-[14px] font-bold hover:bg-gray-50 transition-colors">
+      Cancelar
+    </button>
+    <button (click)="saveProduct()" class="w-2/3 px-5 py-3.5 bg-[#0f0f0f] text-white rounded-[12px] text-[14px] font-bold hover:bg-black transition-all shadow-sm">
+      {{ editingProductId() ? 'Guardar cambios' : 'Crear producto' }}
+    </button>
+  </div>
+</div>
