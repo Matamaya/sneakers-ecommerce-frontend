@@ -38,4 +38,9 @@ export class OrdersService {
   updateOrderStatus(id: string, status: string): Observable<any> {
     return this.http.patch(`${this.apiUrl}/orders/${id}/status`, { status }, { headers: this.getHeaders() });
   }
+
+  // Crear nuevo pedido
+  createOrder(data: { items: any[], shipping_address: string, notes?: string }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/orders`, data, { headers: this.getHeaders() });
+  }
 }
