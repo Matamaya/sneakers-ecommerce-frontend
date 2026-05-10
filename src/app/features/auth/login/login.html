@@ -12,8 +12,14 @@
     </div>
 
     <!-- Form -->
-    <form class="space-y-6">
+    <form (ngSubmit)="onSubmit()" class="space-y-6">
       
+      @if (errorMessage) {
+        <div class="p-4 text-[13px] font-bold text-red-600 bg-red-50 rounded-[14px] border border-red-100">
+          {{ errorMessage }}
+        </div>
+      }
+
       <!-- Email Field -->
       <div>
         <label for="email" class="block text-[12px] font-bold text-gray-600 mb-2 ml-1">Email</label>
@@ -21,7 +27,7 @@
           type="email" 
           id="email" 
           name="email"
-          value="admin@test.com"
+          [(ngModel)]="email"
           class="w-full px-5 py-4 bg-[#eef2f9] border border-transparent rounded-[14px] text-[14px] text-gray-900 focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition-all font-semibold"
         />
       </div>
@@ -33,14 +39,14 @@
           type="password" 
           id="password" 
           name="password"
-          value="123456"
+          [(ngModel)]="password"
           class="w-full px-5 py-4 bg-[#eef2f9] border border-transparent rounded-[14px] text-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition-all tracking-[0.2em]"
         />
       </div>
 
       <!-- Submit Button -->
       <button 
-        type="button" 
+        type="submit" 
         class="w-full mt-4 bg-[#0f0f0f] text-white py-4 rounded-[14px] font-bold text-[15px] hover:bg-black hover:shadow-lg transition-all"
       >
         Iniciar sesión

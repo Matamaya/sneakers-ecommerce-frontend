@@ -1,24 +1,29 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { Observable, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  // Usamos Signals (Angular moderno) para que la UI reaccione a los cambios
+  private http = inject(HttpClient);
+  private router = inject(Router);
+  private apiUrl = 'http://localhost:3000/api/auth'; // la ruta del backend
+
   currentUser = signal<{ email: string, role: string } | null>(null);
 
   constructor() {
-    this.checkToken(); // Al cargar la app, comprobamos si ya hay un token
+    this.checkToken();
   }
 
-  // Método simulado para procesar el JWT (cuando conectes con el backend real)
-  // Como tu arquitectura usa JWT, decodificaremos el payload aquí.
+  // Decodifica el token para saber quién es y qué rol tiene
   private decodeToken(token: string) {
     try {
-      // Un JWT tiene 3 partes. La del medio (índice 1) es el payload con los datos.
       const payload = token.split('.')[1];
       const decoded = JSON.parse(atob(payload));
-      return { email: decoded.email, role: decoded.role };
+      const role = decoded.user_metadata?.role || decoded.app_metadata?.role || 'user';
+      return { email: decoded.email, role: role };
     } catch (e) {
       return null;
     }
@@ -27,31 +32,37 @@ export class AuthService {
   checkToken(): void {
     const token = localStorage.getItem('token');
     if (token) {
-      const userData = this.decodeToken(token);
-      this.currentUser.set(userData);
+      this.currentUser.set(this.decodeToken(token));
     } else {
       this.currentUser.set(null);
     }
   }
 
-  // Métodos útiles para los Guards y el Navbar
-  isLoggedIn(): boolean {
-    return this.currentUser() !== null;
+  // Hace la petición POST a tu backend
+  login(email: string, password: string): Observable<any> {
+    return this.http.post<{token?: string, access_token?: string}>(`${this.apiUrl}/login`, { email, password }).pipe(
+      tap(response => {
+        // Cuando el backend responde con el token, lo guardamos
+        const token = response?.access_token || response?.token;
+        if (token) {
+          localStorage.setItem('token', token);
+          this.checkToken();
+        }
+      })
+    );
   }
 
-  isAdmin(): boolean {
-    return this.currentUser()?.role === 'admin'; // Rol admin definido en tu BD de Supabase
+  // Función de registro real
+  register(email: string, password: string, fullName: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/register`, { email, password, fullName });
   }
 
-  // Se llamará al hacer login exitoso
-  setSession(token: string): void {
-    localStorage.setItem('token', token);
-    this.checkToken();
-  }
+  isLoggedIn(): boolean { return this.currentUser() !== null; }
+  isAdmin(): boolean { return this.currentUser()?.role === 'admin'; }
 
-  // Se llamará al hacer logout
   logout(): void {
     localStorage.removeItem('token');
     this.currentUser.set(null);
+    this.router.navigate(['/']);
   }
 }
