@@ -22,9 +22,7 @@ export class ProductDetail implements OnInit {
 
   availableStock = computed(() => {
     const p = this.product();
-    if (!p || !p.sizes) return 0;
-    const sizeObj = p.sizes.find((s: any) => s.size == this.selectedSize());
-    return sizeObj ? sizeObj.stock : 0;
+    return p ? (p.stock || 0) : 0;
   });
 
   ngOnInit() {
@@ -34,12 +32,13 @@ export class ProductDetail implements OnInit {
         next: (data) => {
           this.product.set(data);
           this.isLoading.set(false);
-          // Seleccionar primera talla con stock por defecto
-          if (data.sizes && Array.isArray(data.sizes)) {
-            const availableSize = data.sizes.find((s: any) => s.stock > 0);
-            if (availableSize) {
-              this.selectedSize.set(String(availableSize.size));
-            }
+          // Seleccionar primera talla por defecto
+          if (data.sizes && Array.isArray(data.sizes) && data.sizes.length > 0) {
+             // Dependiendo de si sizes es ['40'] o [{size:'40'}], intentamos sacar el valor
+             const firstSize = typeof data.sizes[0] === 'string' ? data.sizes[0] : data.sizes[0].size;
+             if (firstSize) {
+               this.selectedSize.set(String(firstSize));
+             }
           }
         },
         error: (err) => {
@@ -53,11 +52,8 @@ export class ProductDetail implements OnInit {
   selectSize(size: string) {
     const p = this.product();
     if (!p || !p.sizes) return;
-    const sizeObj = p.sizes.find((s: any) => s.size == size);
-    if (sizeObj && sizeObj.stock > 0) {
-      this.selectedSize.set(String(size));
-      this.quantity.set(1); // Reset quantity when changing size
-    }
+    this.selectedSize.set(String(size));
+    this.quantity.set(1); // Reset quantity when changing size
   }
 
   incrementQuantity() {

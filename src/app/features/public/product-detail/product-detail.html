@@ -71,18 +71,17 @@
             }
           </div>
           <div class="flex flex-wrap gap-3">
-            @for (sizeObj of product()!.sizes; track sizeObj.size) {
+            @for (item of product()!.sizes; track item) {
+              <!-- Usar el item directamente si es string, o item.size si es objeto -->
               <button 
-                (click)="selectSize(sizeObj.size)"
-                [disabled]="sizeObj.stock === 0"
+                (click)="selectSize(item.size || item)"
                 class="w-[48px] h-[48px] rounded-[12px] border flex items-center justify-center text-[14px] font-bold transition-all"
                 [ngClass]="{
-                  'bg-black text-white border-black shadow-lg shadow-black/20': selectedSize() == sizeObj.size,
-                  'bg-white text-gray-900 border-gray-200 hover:border-black': selectedSize() != sizeObj.size && sizeObj.stock > 0,
-                  'bg-gray-50 text-gray-300 border-gray-100 cursor-not-allowed': sizeObj.stock === 0
+                  'bg-black text-white border-black shadow-lg shadow-black/20': selectedSize() == (item.size || item),
+                  'bg-white text-gray-900 border-gray-200 hover:border-black': selectedSize() != (item.size || item)
                 }"
               >
-                {{ sizeObj.size }}
+                {{ item.size || item }}
               </button>
             }
           </div>

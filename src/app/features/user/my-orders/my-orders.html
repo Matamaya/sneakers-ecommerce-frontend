@@ -1,1 +1,121 @@
-<p>my-orders works!</p>
+<div class="max-w-[1000px] mx-auto px-6 py-12 min-h-[70vh] flex flex-col bg-[#fafafa]">
+  
+  <div class="flex justify-between items-center mb-12">
+    <h1 class="text-[28px] font-extrabold text-gray-900 tracking-tight">Mis pedidos</h1>
+    <a routerLink="/catalog" class="text-[14px] font-medium text-gray-400 hover:text-black transition-colors">Seguir comprando →</a>
+  </div>
+
+  @if (isLoading()) {
+    <div class="flex-1 flex justify-center items-center py-20">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-black"></div>
+    </div>
+  } @else if (orders().length === 0) {
+    <!-- Estado Vacío -->
+    <div class="flex-1 flex flex-col items-center justify-center py-20 text-center">
+      <!-- Icono Clipboard -->
+      <div class="mb-6 flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-300">
+          <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+          <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+        </svg>
+      </div>
+      
+      <h2 class="text-[18px] font-bold text-gray-800 mb-2">Aún no tienes pedidos</h2>
+      <p class="text-[13px] font-medium text-gray-400 mb-8">Cuando realices tu primer pedido aparecerá aquí</p>
+      
+      <a routerLink="/catalog" class="px-8 py-3.5 bg-[#0f0f0f] text-white text-[13px] font-bold rounded-[12px] hover:bg-black hover:-translate-y-0.5 transition-all shadow-xl shadow-black/10">
+        Ver catálogo
+      </a>
+    </div>
+  } @else {
+    <!-- Contenido de Pedidos -->
+    <div class="space-y-6">
+      @for (order of orders(); track order.id) {
+        <div class="bg-white border border-gray-100 rounded-[20px] overflow-hidden shadow-sm transition-all duration-300">
+          
+          <!-- Cabecera del pedido (Clickable) -->
+          <div 
+            (click)="toggleOrder(order.id)"
+            class="flex items-center justify-between p-6 cursor-pointer hover:bg-gray-50 transition-colors"
+          >
+            <!-- ID y Fecha -->
+            <div class="flex flex-col">
+              <span class="text-[15px] font-black text-gray-900 tracking-wide">#{{ order.id.substring(0, 8) | uppercase }}</span>
+              <span class="text-[13px] font-medium text-gray-400 mt-1">{{ order.created_at | date:'dd/MM/yyyy - HH:mm' }}</span>
+            </div>
+            
+            <!-- Estado, Total y Flecha -->
+            <div class="flex items-center gap-6">
+              <span [class]="'px-4 py-1.5 rounded-full text-[12px] font-bold ' + getStatusColor(order.status)">
+                {{ getStatusText(order.status) }}
+              </span>
+              <span class="text-[17px] font-extrabold text-gray-900">{{ order.total_amount | number:'1.2-2' }} €</span>
+              
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 20 20" 
+                fill="currentColor" 
+                class="w-5 h-5 text-gray-300 transition-transform duration-300"
+                [class.rotate-180]="expandedOrders().has(order.id)"
+              >
+                <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+              </svg>
+            </div>
+          </div>
+
+          <!-- Detalles del pedido (Expandible) -->
+          @if (expandedOrders().has(order.id)) {
+            <div class="border-t border-gray-100 p-6 bg-white animate-[fadeIn_0.3s_ease-out]">
+              
+              <!-- Lista de productos del pedido -->
+              <div class="space-y-4 mb-8">
+                @for (item of order.order_items; track item.id) {
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-5">
+                      <!-- Imagen -->
+                      <div class="w-[64px] h-[64px] bg-[#f2f2f2] rounded-[14px] flex items-center justify-center p-2">
+                        @if (item.products?.image_url) {
+                          <img [src]="item.products.image_url" [alt]="item.products.name" class="w-full h-full object-contain mix-blend-multiply">
+                        } @else {
+                          <span class="text-[10px] font-bold text-gray-400 uppercase">Img</span>
+                        }
+                      </div>
+                      
+                      <!-- Info de producto -->
+                      <div class="flex flex-col">
+                        <span class="text-[10px] font-bold text-gray-400 tracking-[0.15em] uppercase mb-1">{{ item.products?.brand || '---' }}</span>
+                        <span class="text-[15px] font-extrabold text-gray-900">{{ item.products?.name || 'Producto eliminado' }}</span>
+                        <span class="text-[13px] font-medium text-gray-500 mt-1">Talla {{ item.size }} · {{ item.quantity }} ud.</span>
+                      </div>
+                    </div>
+                    
+                    <!-- Precio de la línea -->
+                    <span class="text-[15px] font-extrabold text-gray-900">{{ (item.unit_price * item.quantity) | number:'1.2-2' }} €</span>
+                  </div>
+                }
+              </div>
+
+              <!-- Dirección de envío y Observaciones -->
+              <div class="border-t border-gray-100 pt-6">
+                <div class="mb-4">
+                  <h4 class="text-[11px] font-bold text-gray-400 tracking-[0.1em] uppercase mb-2">Dirección de envío</h4>
+                  <p class="text-[14px] font-semibold text-gray-800">{{ order.shipping_address }}</p>
+                </div>
+                
+                @if (order.notes) {
+                  <div>
+                    <h4 class="text-[11px] font-bold text-gray-400 tracking-[0.1em] uppercase mb-2">Observaciones</h4>
+                    <p class="text-[14px] font-semibold text-gray-800">{{ order.notes }}</p>
+                  </div>
+                }
+              </div>
+
+            </div>
+          }
+          
+        </div>
+      }
+    </div>
+  }
+
+</div>

@@ -43,4 +43,9 @@ export class OrdersService {
   createOrder(data: { items: any[], shipping_address: string, notes?: string }): Observable<any> {
     return this.http.post(`${this.apiUrl}/orders`, data, { headers: this.getHeaders() });
   }
+
+  // Obtener pedidos del usuario logueado
+  getMyOrders(): Observable<Order[]> {
+    return this.http.get<Order[]>(`${this.apiUrl}/orders/my-orders`, { headers: this.getHeaders() });
+  }
 }
