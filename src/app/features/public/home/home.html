@@ -1,7 +1,146 @@
-<div class="flex flex-col items-center justify-center pt-32 px-4 text-center">
-  <p class="text-sm tracking-widest text-gray-400 mb-4 uppercase">Nueva Colección 2026</p>
-  <h1 class="text-5xl md:text-7xl font-bold tracking-tighter mb-8 leading-tight">
-    Las mejores <br> zapatillas, <br> <span class="text-gray-500">a tu medida</span>
-  </h1>
+<!-- Hero Section -->
+<section class="bg-[#0f0f0f] text-white min-h-[600px] flex items-center justify-center pt-16 px-4 lg:px-12 w-full">
+  <div class="max-w-[1200px] w-full mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+    
+    <!-- Left content -->
+    <div>
+      <p class="text-[11px] font-bold tracking-[0.2em] text-gray-500 uppercase mb-6">Nueva Colección 2026</p>
+      <h1 class="text-5xl md:text-[64px] font-bold tracking-tight mb-8 leading-[1.1]">
+        Las mejores <br /> zapatillas, <br />
+        <span class="text-gray-500">a tu medida</span>
+      </h1>
+      <p class="text-gray-400 text-base md:text-lg max-w-md mb-10 font-medium">
+        Running, basketball, lifestyle y training.<br/>
+        Encuentra tu par perfecto.
+      </p>
+      
+      <div class="flex flex-wrap items-center gap-6">
+        <a routerLink="/catalog" class="px-8 py-3.5 bg-white text-black font-bold text-[14px] rounded-[12px] hover:bg-gray-100 transition-colors shadow-lg cursor-pointer">
+          Ver catálogo
+        </a>
+        <a routerLink="/catalog" class="text-[14px] font-bold text-gray-400 hover:text-white transition-colors flex items-center gap-2 cursor-pointer">
+          Novedades <span class="text-lg">→</span>
+        </a>
+      </div>
+    </div>
 
-</div>
+    <!-- Right decorative area -->
+    <div class="relative flex justify-center lg:justify-end items-center h-full min-h-[400px]">
+      <!-- Concentric circles -->
+      <div class="absolute w-[300px] h-[300px] md:w-[400px] md:h-[400px] rounded-full border border-gray-800/50 flex items-center justify-center pointer-events-none">
+        <div class="w-[200px] h-[200px] md:w-[300px] md:h-[300px] rounded-full border border-gray-800/30"></div>
+      </div>
+      
+      <!-- Badge -->
+      <div class="absolute right-0 bottom-20 bg-white text-black px-5 py-4 rounded-[16px] shadow-2xl z-10 text-center animate-[bounce_3s_infinite_ease-in-out]">
+        <div class="text-[20px] font-black leading-none">50+</div>
+        <div class="text-[10px] font-bold tracking-wider uppercase text-gray-500 mt-1">modelos</div>
+      </div>
+    </div>
+    
+  </div>
+</section>
+
+<!-- Productos Destacados -->
+<section class="bg-[#fafafa] py-20 px-6 lg:px-12 w-full">
+  <div class="max-w-[1200px] mx-auto w-full">
+    
+    <!-- Section Header -->
+    <div class="flex items-center justify-between mb-12">
+      <h2 class="text-[26px] font-extrabold text-gray-900 tracking-tight">Productos destacados</h2>
+      <a routerLink="/catalog" class="text-[13px] font-medium text-gray-400 hover:text-black transition-colors flex items-center gap-2 cursor-pointer">
+        Ver todos <span class="text-lg leading-none mt-[-2px]">→</span>
+      </a>
+    </div>
+
+    @if (isLoading()) {
+      <div class="flex justify-center items-center py-20">
+        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-black"></div>
+      </div>
+    } @else {
+      <!-- Product Grid (Reused from catalog) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        @for (product of featuredProducts(); track product.id) {
+          <a [routerLink]="['/product', product.slug || product.id]" class="group block bg-white border border-gray-100 rounded-[20px] overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+            
+            <!-- Image Area -->
+            <div class="aspect-w-4 aspect-h-3 bg-[#f1f1f1] relative overflow-hidden h-52 flex items-center justify-center p-6">
+              @if (product.image_url) {
+                <img [src]="product.image_url" [alt]="product.name" class="w-full h-full object-contain mix-blend-multiply drop-shadow-lg group-hover:scale-105 transition-transform duration-500">
+              } @else {
+                <div class="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center opacity-50 group-hover:opacity-75 transition-opacity">
+                  <span class="text-xs font-bold text-gray-400 uppercase tracking-wider text-center">Sin imagen</span>
+                </div>
+              }
+              
+              <!-- Badge -->
+              <span class="absolute top-4 left-4 bg-black text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full z-10">
+                {{ product.categories?.name || 'Genérico' }}
+              </span>
+            </div>
+
+            <!-- Content Area -->
+            <div class="p-5">
+              <p class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.15em] mb-1.5">{{ product.brand || '---' }}</p>
+              <h3 class="text-[15px] font-bold text-gray-900 mb-4 leading-tight truncate">{{ product.name }}</h3>
+              
+              <div class="flex items-center justify-between">
+                <span class="text-[17px] font-extrabold text-gray-900">{{ product.price | number:'1.2-2' }} €</span>
+              </div>
+            </div>
+          </a>
+        }
+      </div>
+    }
+
+  </div>
+</section>
+
+<!-- Comprar por categoría -->
+<section class="bg-[#0a0a0a] py-20 px-6 lg:px-12 w-full text-white border-t border-[#1a1a1a]">
+  <div class="max-w-[1200px] mx-auto w-full">
+    
+    <h2 class="text-[26px] font-extrabold tracking-tight mb-12">Comprar por categoría</h2>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      @for (category of categories(); track category.id) {
+        <a [routerLink]="['/catalog']" [queryParams]="{ category: category.slug }" class="group block bg-[#161616] border border-[#222] rounded-[24px] p-8 hover:bg-[#1a1a1a] hover:border-[#333] hover:-translate-y-1 transition-all duration-300">
+          
+          <!-- Abstract Category Icon based on name or generic -->
+          <div class="mb-6 text-gray-500 group-hover:text-white transition-colors">
+            @if (category.slug === 'basketball') {
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="2" x2="12" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+            } @else if (category.slug === 'running') {
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm9-5c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm7 3c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/><path d="M4 14l5-4 4 2 5-4"/></svg>
+            } @else if (category.slug === 'lifestyle') {
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            } @else {
+              <!-- Training or fallback -->
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 5v14"/><path d="M18 5v14"/><path d="M2 9h8"/><path d="M14 9h8"/><path d="M2 15h8"/><path d="M14 15h8"/></svg>
+            }
+          </div>
+
+          <h3 class="text-[17px] font-bold text-white mb-3">{{ category.name }}</h3>
+          
+          <p class="text-[13px] text-gray-500 font-medium mb-8 leading-relaxed">
+            @if (category.slug === 'basketball') {
+              Calzado con soporte de tobillo para la cancha.
+            } @else if (category.slug === 'lifestyle') {
+              Zapatillas urbanas para el día a día.
+            } @else if (category.slug === 'running') {
+              Zapatillas de alto rendimiento para corredores.
+            } @else {
+              Calzado versátil para el gimnasio o entrenar.
+            }
+          </p>
+
+          <span class="text-[12px] font-bold text-gray-600 group-hover:text-white transition-colors flex items-center gap-2">
+            Explorar <span class="text-sm leading-none mt-[-2px]">→</span>
+          </span>
+          
+        </a>
+      }
+    </div>
+
+  </div>
+</section>

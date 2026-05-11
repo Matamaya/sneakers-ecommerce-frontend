@@ -1,4 +1,5 @@
-<div class="max-w-[1100px] mx-auto px-6 py-12">
+<div class="w-full min-h-screen bg-[#f8f9fa] px-6 py-12">
+  <div class="max-w-[1100px] mx-auto">
   
   <!-- Header -->
   <div class="flex items-center justify-between mb-8">
@@ -96,6 +97,7 @@
     </div>
   </div>
 </div>
+</div>
 
 <!-- Overlay (Fondo oscuro) -->
 @if (isSidebarOpen()) {
@@ -141,19 +143,19 @@
     <!-- Nombre -->
     <div>
       <label class="block text-[13px] font-bold text-gray-600 mb-2">Nombre *</label>
-      <input type="text" [ngModel]="productForm().name" (ngModelChange)="updateField('name', $event)" placeholder="Ej: Nike Air Max 90" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-[10px] text-[14px] focus:outline-none focus:ring-2 focus:ring-black transition-all">
+      <input type="text" [ngModel]="productForm().name" (ngModelChange)="updateField('name', $event)" placeholder="Ej: Nike Air Max 90" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-[10px] text-[14px] text-gray-900 focus:outline-none focus:ring-2 focus:ring-black transition-all">
     </div>
 
     <!-- Marca -->
     <div>
       <label class="block text-[13px] font-bold text-gray-600 mb-2">Marca</label>
-      <input type="text" [ngModel]="productForm().brand" (ngModelChange)="updateField('brand', $event)" placeholder="Ej: Nike" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-[10px] text-[14px] focus:outline-none focus:ring-2 focus:ring-black transition-all">
+      <input type="text" [ngModel]="productForm().brand" (ngModelChange)="updateField('brand', $event)" placeholder="Ej: Nike" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-[10px] text-[14px] text-gray-900 focus:outline-none focus:ring-2 focus:ring-black transition-all">
     </div>
 
     <!-- Categoría -->
     <div>
       <label class="block text-[13px] font-bold text-gray-600 mb-2">Categoría</label>
-      <select [ngModel]="productForm().category_id" (ngModelChange)="updateField('category_id', $event)" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-[10px] text-[14px] text-gray-600 focus:outline-none focus:ring-2 focus:ring-black transition-all appearance-none cursor-pointer">
+      <select [ngModel]="productForm().category_id" (ngModelChange)="updateField('category_id', $event)" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-[10px] text-[14px] text-gray-900 focus:outline-none focus:ring-2 focus:ring-black transition-all appearance-none cursor-pointer">
         <option value="">Selecciona una categoría</option>
         @for (category of categories(); track category.id) {
           <option [value]="category.id">{{ category.name }}</option>
@@ -165,30 +167,30 @@
     <div class="grid grid-cols-2 gap-4">
       <div>
         <label class="block text-[13px] font-bold text-gray-600 mb-2">Precio (€) *</label>
-        <input type="number" [ngModel]="productForm().price" (ngModelChange)="updateField('price', $event)" placeholder="0" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-[10px] text-[14px] focus:outline-none focus:ring-2 focus:ring-black transition-all">
+        <input type="number" [ngModel]="productForm().price" (ngModelChange)="updateField('price', $event)" placeholder="0" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-[10px] text-[14px] text-gray-900 focus:outline-none focus:ring-2 focus:ring-black transition-all">
       </div>
       <div>
         <label class="block text-[13px] font-bold text-gray-600 mb-2">Stock total</label>
-        <input type="number" [ngModel]="productForm().stock" (ngModelChange)="updateField('stock', $event)" placeholder="0" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-[10px] text-[14px] focus:outline-none focus:ring-2 focus:ring-black transition-all">
+        <input type="number" [ngModel]="productForm().stock" (ngModelChange)="updateField('stock', $event)" placeholder="0" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-[10px] text-[14px] text-gray-900 focus:outline-none focus:ring-2 focus:ring-black transition-all">
       </div>
     </div>
 
     <!-- Tallas -->
     <div>
-      <label class="block text-[13px] font-bold text-gray-600 mb-2">Tallas disponibles (separadas por coma)</label>
-      <input type="text" [ngModel]="productForm().sizes" (ngModelChange)="updateField('sizes', $event)" placeholder="Ej: 39, 40, 41.5, 42" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-[10px] text-[14px] focus:outline-none focus:ring-2 focus:ring-black transition-all">
+      <label class="block text-[13px] font-bold text-gray-600 mb-2">Tallas disponibles</label>
+      <input type="text" [ngModel]="productForm().sizes" (ngModelChange)="updateField('sizes', $event)" placeholder="Ej: 39, 40, 41.5, 42" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-[10px] text-[14px] text-gray-900 focus:outline-none focus:ring-2 focus:ring-black transition-all">
     </div>
 
     <!-- Stock por talla -->
     <div>
-      <label class="block text-[13px] font-bold text-gray-600 mb-2">Stock por talla (separado por coma)</label>
-      <input type="text" [ngModel]="productForm().sizesStock" (ngModelChange)="updateField('sizesStock', $event)" placeholder="Ej: 10, 5, 20, 0" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-[10px] text-[14px] focus:outline-none focus:ring-2 focus:ring-black transition-all">
+      <label class="block text-[13px] font-bold text-gray-600 mb-2">Stock por talla</label>
+      <input type="text" [ngModel]="productForm().sizesStock" (ngModelChange)="updateField('sizesStock', $event)" placeholder="Ej: 10, 5, 20, 0" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-[10px] text-[14px] text-gray-900 focus:outline-none focus:ring-2 focus:ring-black transition-all">
     </div>
 
     <!-- Descripción -->
     <div>
       <label class="block text-[13px] font-bold text-gray-600 mb-2">Descripción</label>
-      <textarea [ngModel]="productForm().description" (ngModelChange)="updateField('description', $event)" rows="4" placeholder="Añade una descripción para este producto..." class="w-full px-4 py-3 bg-white border border-gray-200 rounded-[10px] text-[14px] focus:outline-none focus:ring-2 focus:ring-black transition-all resize-none"></textarea>
+      <textarea [ngModel]="productForm().description" (ngModelChange)="updateField('description', $event)" rows="4" placeholder="Añade una descripción para este producto..." class="w-full px-4 py-3 bg-white border border-gray-200 rounded-[10px] text-[14px] text-gray-900 focus:outline-none focus:ring-2 focus:ring-black transition-all resize-none"></textarea>
     </div>
 
   </div>

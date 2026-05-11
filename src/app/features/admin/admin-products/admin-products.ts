@@ -64,9 +64,18 @@ export class AdminProducts implements OnInit {
     // Convertir el JSON/array de tallas a texto separado por comas
     let sizesStr = '';
     let sizesStockStr = '';
-    if (product.sizes && Array.isArray(product.sizes)) {
-       sizesStr = product.sizes.map(s => s.size).join(', ');
-       sizesStockStr = product.sizes.map(s => s.stock).join(', ');
+    if (product.sizes) {
+      try {
+        let sizesArray = typeof product.sizes === 'string' ? JSON.parse(product.sizes) : product.sizes;
+        if (Array.isArray(sizesArray)) {
+          sizesStr = sizesArray.map(s => (typeof s === 'object' && s !== null) ? (s.size || '') : s).filter(val => val !== '').join(', ');
+          sizesStockStr = sizesArray.map(s => (typeof s === 'object' && s !== null) ? (s.stock !== undefined ? s.stock : '') : '').join(', ');
+        } else {
+          sizesStr = String(product.sizes);
+        }
+      } catch (e) {
+        sizesStr = String(product.sizes);
+      }
     }
 
     // Forzamos la actualización del Signal con los datos precisos
